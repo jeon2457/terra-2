@@ -698,7 +698,9 @@
                 <td colspan="6">
                   <div class="gototop">
                     <!-- 우측제일하단 화살표를 누르면 제일위로 이동하게한다.   -->
-                    <a href="#"><img class="fa" src="image/arrow.png" /></a>
+                    <button id="goTopBtn" type="button" aria-label="맨 위로 이동" style="background:none; border:none; cursor:pointer;">
+                      <img class="fa" src="image/arrow.png" alt="맨 위로 가기"/>
+                    </button>
                   </div>
 
                   <div class="foot">
@@ -717,6 +719,32 @@
         </div>
       </div>
     </div>
+
+    <script>
+    document.getElementById("goTopBtn").addEventListener("click", function() {
+      const start = window.scrollY;
+      const duration = 1500; // 스크롤 이동시간: 1.5초
+      const startTime = performance.now();
+
+      function scrollStep(timestamp) {
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // ease-in-out 효과
+        const ease = progress < 0.5
+          ? 2 * progress * progress
+          : -1 + (4 - 2 * progress) * progress;
+
+        window.scrollTo(0, start * (1 - ease));
+
+        if (progress < 1) {
+          requestAnimationFrame(scrollStep);
+        }
+      }
+
+      requestAnimationFrame(scrollStep);
+    });
+    </script>
 
     <!-- ✅ Bootstrap JS (번들) -->
     <script
