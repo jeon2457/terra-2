@@ -1,358 +1,813 @@
-<!-- 부트스트랩 5.2.2로 제작되었다. css나 js 를 버전에 다른걸 설치하면 작동이 제대로 안될수있으니 주의바람!
-부트스트랩 link는 <head>에 삽입하고, <script>는 <body>부분의 끝부분에 삽입해야하나 <script> "DOMContentLoaded" 또는 defer를 <head>안에 삽입하면 그 다음부터 스크립트 태그를 <body> 어느 위치에 있어도 정상적으로 작동한다.한다.
-✅메인 이 페이지는 초기화면,엑셀 스프레드시트 접속연결시 보안검증 절차없이 코딩되어있다.  ✅ [[무검증 코딩 페이지]] 
--->
-<!-- [이모지 모음] 🥰🥵 💥🖐 ⌚ 📱 📲 💻 📞 ⏰ ⌛ 📌🚩🧡❌ ❗ ❓
-🔔🔕 ✅ ❎ 💯 📢 📣 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="직지황악회35" />
+  <title>&#x260E;회원연락망</title>
+  <meta name="format-detection" content="telephone=no" />
+
+  <!-- 파비콘 -->
+  <link rel="icon" href="./favicons/favicon.png?v=2" />
+  <link rel="icon" type="image/png" sizes="36x36" href="./favicons/android-icon-36x36.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="./favicons/android-icon-48x48.png" />
+  <link rel="icon" type="image/png" sizes="72x72" href="./favicons/android-icon-72x72.png" />
+  <link rel="apple-touch-icon" sizes="32x32" href="./favicons/apple-icon-32x32.png">
+  <link rel="apple-touch-icon" sizes="57x57" href="./favicons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="./favicons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="./favicons/apple-icon-72x72.png">
+
+
+  <!-- 부트스트랩 CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+
+  <!-- =====================
+       CSS (원본 그대로)
+       ===================== -->
+  <style>
+    @charset "utf-8";
+
+    body {
+      background: linear-gradient(to right, #232526, #414345);
+      margin: 0;
+      padding: 3px 0;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    a { text-decoration: none !important; }
+
+    /* 초기 로딩 화면 */
+    #loading-screen {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background: #363434;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.5s ease;
+      z-index: 9999;
+    }
+
+    #loading-screen img {
+      width: 250px;
+    }
+
+    #main-content {
+      display: none;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 0;
+    }
+
+    /* 헤더 (시계) */
+    .header {
+      width: 100%;
+      max-width: 700px;
+      height: 3.25rem;
+      margin: 0 auto;
+      text-align: center;
+      color: #f4f4f4;
+      background-color: rgba(0, 0, 0);
+      padding: 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #Clockday, #Clock {
+      color: #f0c420;
+      font-size: 1.7rem;
+      display: inline-block;
+      margin: 0 5px;
+    }
+
+    .header a {
+      color: #f0c420;
+      text-decoration: none;
+    }
+
+    /* 메인 바디 */
+    .main-body {
+      padding-top: calc(3.25rem + 30px);
+    }
+
+    .content-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      margin-top: 0;
+    }
+
+    /* 큐브 컨테이너 */
+    .cube-container {
+      /*position: fixed;
+      top: calc(3.25rem + 2px);
+      left: 10px;
+      z-index: 2000;*/
+      position: absolute; /* fixed ❌ */
+      top: 7px;
+      left: 10px;
+      z-index: 1001;
+    }
 
 
 
-<!doctype html>
-<html lang="ko-KR"> 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <meta name="description" content="직지35회">
-        <title>☏ 직지35</title>
-      
+    .wrap1 {
+      width: 25px;
+      height: 25px;
+      perspective: 500px;
+      perspective-origin: center center;
+      transform-style: preserve-3d;
+      position: relative;
+      padding: 0;
+    }
+
+    .cube {
+      width: 25px;
+      height: 25px;
+      position: absolute;
+      top: 0;          /* ✔ 0으로 고정 */
+      left: 0;         /* ✔ 0으로 고정 */
+      transform-style: preserve-3d;
+      transform-origin: center center;   /* ★ 핵심 */
+      animation: cubeRotate 3s linear infinite;
+    }
+
+    .cube img {
+      position: absolute;
+      top: 3px;
+      left: -3px;
+      width: 25px;
+      height: 25px;
+      backface-visibility: hidden;
+      border: none;
+      display: block;
+      transform-origin: 50% 50% 50%;
+    }
+
+    @keyframes cubeRotate {
+      from {
+        transform: rotateX(0deg);
+      }
+      to {
+        transform: rotateX(360deg);
+      }
+    }
+
+    .cube {
+      animation: cubeRotate 6s infinite linear;
+    }
 
 
-      <!-- 비밀번호 검증 관문   -->
-      <!-- pass.js파일에서 비밀번호 관리!! -->
-      <!-- 아래 255라인, 268라인 부근에 "입출금내역서(test)", "납입금현황(test)" 해당 링크가 걸려있다. -->
-      <!-- ✅스크립트 위치가 어디에와도 상관없게끔하는 코드 ~ <head>태그 안에 삽입한다. -->
-      <!-- ✅스크립트 "DOMContentLoaded", function() 대신에 defer을 사용해도 상관없음! -->
-      <script src="js/pass.js" defer></script> 
-      <script src="js/pass_1.js" defer></script>
-
-      <link
-      rel="apple-touch-icon"
-      sizes="32x32"
-      href="image/apple-icon-32x32.png"
-    />
-      <link
-        rel="apple-touch-icon"
-        sizes="57x57"
-        href="image/apple-icon-57x57.png"
-      />
-      <link
-        rel="apple-touch-icon"
-        sizes="60x60"
-        href="image/apple-icon-60x60.png"
-      />
-      <link
-        rel="apple-touch-icon"
-        sizes="72x72"
-        href="image/apple-icon-72x72.png"
-      />
-      <link
-        rel="apple-touch-icon"
-        sizes="76x76"
-        href="image/apple-icon-76x76.png"
-      />
-      <link
-        rel="apple-touch-icon"
-        sizes="114x114"
-        href="image/apple-icon-114x114.png"
-      />
-      <link
-        rel="apple-touch-icon"
-        sizes="120x120"
-        href="image/apple-icon-120x120.png"
-      />
-      <link
-        rel="apple-touch-icon"
-        sizes="144x144"
-        href="image/apple-icon-144x144.png"
-      />
-      <link
-        rel="apple-touch-icon"
-        sizes="152x152"
-        href="image/apple-icon-152x152.png"
-      />
-      <link
-        rel="apple-touch-icon"
-        sizes="180x180"
-        href="image/apple-icon-180x180.png"
-      />
-
-      <link
-        rel="icon"
-        type="image/png"
-        sizes="36x36"
-        href="image/android-icon-36x36.png"
-      />
-      <link
-        rel="icon"
-        type="image/png"
-        sizes="48x48"
-        href="image/android-icon-48x48.png"
-      />
-      <link
-        rel="icon"
-        type="image/png"
-        sizes="72x72"
-        href="image/android-icon-72x72.png"
-      />
-      <link
-        rel="icon"
-        type="image/png"
-        sizes="96x96"
-        href="image/android-icon-96x96.png"
-      />
-      <link
-        rel="icon"
-        type="image/png"
-        sizes="144x144"
-        href="image/android-icon-144x144.png"
-      />
-
-      <link
-        rel="icon"
-        type="image/png"
-        sizes="192x192"
-        href="image/android-icon-192x192.png"
-      />
-
-      <link
-        rel="icon"
-        type="image/png"
-        sizes="512x512"
-        href="image/android-icon-512x512.png"
-      />
-
-      <link rel="icon" href="image/favicon.ico?" />
-
-
-      <!-- ✅매니페스트(manifest)는 파비콘의 정보를 모두 담고있다. -->
-      <link rel="manifest" href="/manifest.json" />
-
-      <!-- Ms브라우저 설정 파일 -->
-      <link rel="browserconfig" href="/browserconfig.xml" />
-
-      <meta name="msapplication-TileColor" content="#ffffff" />
-      <meta name="msapplication-TileImage" content="/ms-icon-144x144.png" />
-      <meta name="theme-color" content="#ffffff" />
-       
-       
-        
-        <!-- 자바스크립트(중요!) -->
-        <link rel="stylesheet" media="screen and (max-width: 580px)" href="style.css">
-
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
-
-	
-      <!-- 구글 머터리얼 아이콘을 사용할수있다.(공통으로 전부 적용됨!)  -->
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-		
-
-        <!-- 마우스 우클릭 방지/드래그 방지하는 스크립트를 head안에 삽입! -->
-        <script type="text/javascript">
-          document.oncontextmenu = function () {
-            return false;
-          };
-        </script>
-
-    </head>
+    .cube img:nth-child(1) { transform: translateZ(12.5px); }
+    .cube img:nth-child(2) { transform: rotateX(90deg) translateZ(12.5px); }
+    .cube img:nth-child(3) { transform: rotateX(180deg) translateZ(12.5px); }
+    .cube img:nth-child(4) { transform: rotateX(270deg) translateZ(12.5px); }
 
 
 
+    .cube-container,
+    .wrap1 {
+      overflow: visible;   /* ★ 중요 */
+    }
 
-      <!-- 마우스 우클릭 방지/드래그 방지하는 스크립트를 head안에 삽입! -->
-        <!-- ✅이 코드 하나로 해당 페이지를 작동시킬수있다. -->
-        <script type="text/javascript">
-          document.oncontextmenu = function () {
-            return false;
-          };
-        </script>
-      </head>
+    /* 전광판 */
+    .wrap2 {
+      position: fixed;
+      top: 3.25rem;
+      left: 0;
+      right: 0;
+      z-index: 999;
+      width: 100%;
+      max-width: 700px;
+      margin: 0 auto;
+      overflow: hidden;
+      background-image: url('../image/bg.gif');
+      background-color: lightgray;
+      background-position: center;
+      background-repeat: repeat-x;
+      background-size: contain;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      padding: 0 103px 0 93px;
+      box-sizing: border-box;
+    }
+
+    .marquee-container {
+      width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+    }
+
+    .marquee {
+      display: flex;
+      align-items: center;
+      animation: marquee 15s linear infinite;
+      font-size: 18px;
+      color: #ffffff;
+      padding-left: 100%;
+    }
+
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      10% { transform: translateX(-50px); }
+      90% { transform: translateX(calc(-100% + 50px)); }
+      100% { transform: translateX(-100%); }
+    }
+
+    .custom-span {
+      display: inline-block;
+      font-size: 18px;
+      line-height: 30px;
+      margin: 1px 20px 5px 17px;
+      padding: 0;
+      vertical-align: middle;
+    }
+
+    /* 테이블 */
+    table {
+      border-collapse: collapse;
+      border: 1px solid #eedca6;
+      width: 100%;
+      max-width: 700px;
+      table-layout: fixed;
+    }
+
+    #memberTableBody tr:first-child td {
+      padding-top: 20px;   /* ← tbody 상하조절 */
+    }
 
 
-      <body>
+    thead {
+      position: sticky;
+      top: calc(3.9rem + 30px);
+      z-index: 998;
+      background: linear-gradient(to right, #232526, #414345);
+    }
+
+    thead th {
+      background: linear-gradient(to right, #232526, #414345);
+      position: sticky;
+      top: calc(3.9rem + 30px);
+      z-index: 998;
+    }
+
+    th {
+      font-size: 0.9em;
+      color: #c49c19d0;
+    }
+
+    th, td {
+      border: 1px solid #eedca6 !important;
+      text-align: center;
+    }
+
+    .no { width: 1.56rem; }
+    .name { width: 4.8rem; font-size: 1.2em; }
+    .tel { width: 9.2rem; font-size: 1.2em; }
+    .address { width: 3.75rem; }
+    .remark { width: 3.75rem; }
+    .sms { width: 3.75rem; font-size: 1.1em; }
+
+    .no_1 { font-size: 0.8em; color: #ffffff; }
+    .name_1 { font-size: 1.1em; color: #ffffff; }
+    .tel_1 { font-size: 1.1em; color: #ffffff; }
+    .address_1 { font-size: 0.8em; color: #ffffff; padding: 6px 0; }
+    .remark_1 { font-size: 0.8em; color: #ffffff; padding: 6px 0; }
+    .sms_1 { padding: 0.37rem 0; }
+
+    .max-small {
+      width: 1.31rem;
+      height: 1.31rem;
+    }
+
+    a {
+      text-decoration: none;
+      color: #ffffff;
+    }
+
+    tfoot td {
+      border: none;
+    }
+
+    .foot {
+      color: antiquewhite;
+      font-size: 0.8em;
+      text-align: center;
+      padding: 1px;
+    }
+
+    .gototop {
+      position: fixed;
+      right: 1.5rem;
+      bottom: 0.5rem;
+    }
+
+    .gototop .fa {
+      background-color: #fff;
+      border: 1px solid lightgray;
+      width: 1.1em;
+      height: 1.1em;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: 0.5s;
+    }
+
+    .gototop .fa:hover {
+      background-color: #838180;
+      color: #ffffff;
+    }
+
+    tbody {
+      display: table-row-group;
+      overflow: visible !important;
+    }
+
+    tr {
+      display: table-row;
+    }
+
+    .main-body {
+      overflow: visible !important;
+      padding-bottom: 2px;
+    }
+
+    /* 반응형 - 태블릿 */
+    @media (max-width: 670px) {
+      .container, .header, .wrap2, table {
+        max-width: 100%;
+      }
+      .content-wrapper {
+        justify-content: flex-start;
+      }
+      .cube-container {
+        left: 5px;
+      }
+      #Clockday, #Clock {
+        font-size: 1.5rem;
+      }
+      .wrap1 {
+        width: 21px;
+        height: 21px;
+        padding: 0 0 0 31px;
+      }
+      .cube {
+        width: 25px;
+        height: 25px;
+        position: relative;
+        top: 0;
+        left: 0;
+      }
+      .marquee {
+        font-size: 1.1em;
+      }
+      .wrap2 {
+        max-width: 100%;
+      }
+      .custom-span {
+        display: inline-block;
+        font-size: 17px;
+        line-height: 30px;
+        margin: 1px 20px 5px 17px;
+        padding: 0;
+      }
+      th {
+        font-size: 0.9em;
+        color: #c49c19d0;
+      }
+      .no { font-size: 0.9em; }
+      .name { font-size: 1.0em; }
+      .tel { font-size: 1.0em; }
+      .address { font-size: 0.9em; }
+      .remark { font-size: 0.9em; }
+      .sms { font-size: 0.9em; }
+      .no_1 { font-size: 0.8em; }
+      .name_1 { font-size: 1.0em; }
+      .tel_1 { font-size: 1.0em; }
+      .address_1 { font-size: 0.8em; }
+      .remark_1 { font-size: 0.9em; }
+      .sms_1 { font-size: 0.9em; }
+    }
+
+    /* 반응형 - 모바일 */
+    @media (max-width: 480px) {
+      body {
+        padding: 0;
+        overflow-x: hidden;
+      }
+      .container, .header {
+        max-width: 100%;
+        width: 100vw;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      .wrap2 {
+        overflow: visible;
+        top: 2.99rem;
+        padding: 5px 42px 0 60px;
+      }
+      .header {
+        max-width: 100%;
+        width: 100vw;
+        left: 0;
+        right: 0;
+        margin: 0;
+      }
+      #Clockday, #Clock {
+        font-size: 1.3rem;
+      }
+      .main-body {
+        padding-top: calc(3rem + 30px);
+      }
+      .content-wrapper {
+        width: 100%;
+      }
+      thead {
+        top: calc(3.6rem + 30px);
+      }
+      .marquee {
+        font-size: 0.9em;
+      }
+      .custom-span {
+        font-size: 14px;
+        margin: 0 10px;
+        line-height: 30px;
+      }
+      table {
+        table-layout: fixed;
+      }
+      .remark, .remark_1 {
+        display: none;
+      }
+
+      .cube-container {
+        position: absolute;
+        top: 50%;
+        left: 10px;
+        transform: translateY(-50%);
+        z-index: 1001;
+      }
+
+
+      .cube {
+        width: 22px;
+        height: 22px;
+        position: relative;
+        top: 0;
+        left: 0;
+        transition: transform 0.5s ease-in-out;
+      }
+      .cube img {
+        width: 22px;
+        height: 22px;
+        position: absolute;
+        top: 3px;
+        left: -39px;
+      }
+
+      .cube img:nth-child(1) { transform: translateZ(11px); }
+      .cube img:nth-child(2) { transform: rotateX(90deg) translateZ(11px); }
+      .cube img:nth-child(3) { transform: rotateX(180deg) translateZ(11px); }
+      .cube img:nth-child(4) { transform: rotateX(270deg) translateZ(11px); }
+      th, td {
+        padding: 0.6rem 0;
+        vertical-align: middle;
+      }
+      td {
+        min-height: 2.5rem;
+      }
+      th {
+        font-size: 0.7em;
+        color: #c49c19d0;
+      }
+      .no { width: 6%; font-size: 0.7em; }
+      .name { width: 26%; font-size: 1.2em; }
+      .tel { width: 39%; font-size: 1.2em; }
+      .address { width: 17%; font-size: 0.9em; }
+      .remark { width: 0; font-size: 0; }
+      .sms { width: 12%; font-size: 0.9em; }
+      .no_1 { font-size: 0.6em; }
+      .name_1 { font-size: 1.1em; }
+      .tel_1 { font-size: 1.1em; }
+      .address_1 { font-size: 0.8em; }
+      .remark_1 { font-size: 0; }
+      .sms_1 { font-size: 0.9em; padding: 0.6rem 0; }
+      .max-small {
+        width: 1rem;
+        height: 1rem;
+      }
+      .foot {
+        padding: 7px;
+      }
+      .gototop {
+        right: 2.4rem;
+        bottom: 0.5rem;
+      }
+
+      /* 하단 병합 테이블 테두리 제거 */
+      tfoot tr,
+      tfoot td {
+        border: none !important;
+      }
+
+      .tfoot-cell {
+        padding: 0;
+      }
+
+  </style>
+
+  <!-- =====================
+       일반 JS (Firebase 제거)
+       ===================== -->
+  <script type="text/javascript">
+    document.oncontextmenu = function () {
+      return false;
+    };
+
+    window.onload = () => {
+      // 큐브 회전
+      let deg = 0;
+      const cube = document.querySelector('.cube');
+      if (cube) {
+        setInterval(() => {
+          deg -= 90;
+          cube.style.transform = `rotateX(${deg}deg)`;
+        }, 1000);
+      }
+
+      // 시간 표시
+      let lastTimeString = '';
+      function updateClock() {
+        const date = new Date();
+        const YYYY = String(date.getFullYear());
+        const MM = String(date.getMonth() + 1).padStart(2, '0');
+        const DD = String(date.getDate()).padStart(2, '0');
+        const hh = String(date.getHours()).padStart(2, '0');
+        const mm = String(date.getMinutes()).padStart(2, '0');
+        const week = ['일', '월', '화', '수', '목', '금', '토'][date.getDay()];
+
+        const currentTimeString = `${YYYY}/${MM}/${DD}(${week}) ${hh}:${mm}`;
+        if (currentTimeString !== lastTimeString) {
+          document.getElementById('Clockday').innerText = `${YYYY}/${MM}/${DD}(${week})`;
+          document.getElementById('Clock').innerText = `${hh}:${mm}`;
+          lastTimeString = currentTimeString;
+        }
+      }
+
+      setInterval(updateClock, 1000);
+      updateClock();
+
+      // 로딩 화면
+      setTimeout(() => {
+        document.getElementById('loading-screen').style.opacity = '0';
+        setTimeout(() => {
+          document.getElementById('loading-screen').style.display = 'none';
+          document.getElementById('main-content').style.display = 'block';
+        }, 500);
+      }, 600);
+    };
+
+    function sendSMS(event, numbers) {
+      return true;
+    }
+  </script>
 
 
 
+  <!-- =====================
+       Firebase 전용 MODULE
+       ===================== -->
 
-		<!-- <헤드부분 네비바   -->
-		<nav class="navbar navbar-dark bg-dark fixed-top">
-			<div class="container-fluid">
-				<a class="navbar-brand" href="../index.html">Home navbar</a>
-				
-				
+  <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-				
-				<!-- <햄버거 버튼  -->
-				<button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar">
-				<span class="navbar-toggler-icon"></span>
-				</button>
-				
-				<!-- <햄버거 버튼을 클릭하면 우측에서 열리는 메뉴창  -->
-				<div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
-					<div class="offcanvas-header">
-						
-						<button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-					</div>
-					
-					<!-- <햄버거 버튼을 클릭으로 열린 페이지  -->
-					<div class="offcanvas-body">
-						<ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-							<li class="nav-item">
-							<!--  Home버튼 ==> 클릭하면 메인페이지로 이동한다. -->
-							<a class="btn btn-primary" href="../index.html" role="button">Home</a>
-							
-							
-						
-					<!-- 스피너 원형으로 회전시키기! ==> 직지35황악회 문자도 같이 회전한다.  -->
-                    <!-- ✅CSS에서 #offcanvasDarkNavbarLabel에서 "직지35 황악회" 글자색상 바꾸기   -->
-					<br><br>
-					<div class="d-flex justify-content-center jikji35">
-						<div class="spinner-border spinner-border-sm text-success" role="status">
-							<span class="visually-hidden">Loading...</span>
-                    <!-- ✅글자색상, 35숫자 사이즈 구현 -->
-							<h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">직지<span class="number_35">35</span> 황악회</h5>
-						</div>
-					</div>
-						
+const firebaseConfig = {
+  apiKey: "AIzaSyAF7AD1d54k21-stmb0Hpg9OMEECvzFHpQ",
+  authDomain: "terraone-d0318.firebaseapp.com",
+  databaseURL: "https://terraone-d0318-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "terraone-d0318",
+  storageBucket: "terraone-d0318.appspot.com",
+  messagingSenderId: "1082807340877",
+  appId: "1:1082807340877:web:6e2b49c04562d800e87104"
+};
 
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-          
-<!-- 테이블 추가 -->
-<!-- CSS에서 .custom-margin 메뉴판위치 상하조정 -->
-<!-- ✅ 테이블 테두리를 점선 또는 숨기기를 하려면 CSS style.css의 table-bordered 클래스에서 수정한다. -->
+const tbody = document.getElementById('memberTableBody');
+const membersRef = ref(db, 'terraone/tel');
 
-<div class="container custom-margin">
-  <table class="table table-bordered text-center">
-      <tbody>
-          <!-- 황악회칙보기 Dropdown -->
-          <tr>
-              <td>
-                  <div class="btn-group d-block">
-                    <!-- .btn-custom-width 버튼너비에 사용 -->
-                    <!-- btn-success ~ 녹색계통의 버튼색상 -->
-                    <!-- btn-warning ~ 주황색계통의 버튼색상 -->
-                      <button type="button" class="btn btn-success dropdown-toggle btn-custom-width" data-bs-toggle="dropdown" aria-expanded="false">
-                          황악회칙보기
-                      </button>
-                      <!-- dropdown-menu-dark 황악회칙보기 버튼을 클릭하면 열리면서 나타나는 배경색 dark바탕색에 흰색계통의 글자 -->
-                      <ul class="dropdown-menu dropdown-menu-dark">
-                          <li><a class="dropdown-item" href="../book/index1.html" target="_blank">1페이지</a></li>
-                          <li><a class="dropdown-item" href="../book/index2.html" target="_blank">2페이지</a></li>
-                          <li><a class="dropdown-item" href="../book/index3.html" target="_blank">3페이지</a></li>
-                          <li><a class="dropdown-item" href="../book/index4.html" target="_blank">4페이지</a></li>
-                          <li><a class="dropdown-item" href="../book/index5.html" target="_blank">5페이지</a></li>
-                          <li><a class="dropdown-item" href="../book/index6.html" target="_blank">6페이지</a></li>
-                      </ul>
-                  </div>
+onValue(membersRef, (snapshot) => {
+  tbody.innerHTML = '';
+  let members = [];
+
+  snapshot.forEach(child => {
+    members.push(child.val());
+  });
+
+  // ✅ 이름 가나다순 정렬
+  members.sort((a, b) => (a.name || '').localeCompare(b.name || '','ko'));
+
+  let idx = 0;
+
+  members.forEach(member => {
+    idx++;
+
+    const isLeader =
+      typeof member.remark === 'string' &&
+      (member.remark.includes('회장') || member.remark.includes('총무'));
+
+    let addressHTML = member.addr || '';
+
+    // ✅ 회장/총무만 링크 생성
+    if (isLeader && member.sms_2 && addressHTML) {
+
+      let numbers = [];
+
+      if (Array.isArray(member.sms_2)) {
+        numbers = member.sms_2;
+      } else if (typeof member.sms_2 === 'string') {
+        numbers = member.sms_2.split(',');
+      } else if (typeof member.sms_2 === 'object') {
+        numbers = Object.values(member.sms_2);
+      }
+
+      numbers = numbers
+        .map(n => String(n).trim())
+        .filter(n => n && n !== member.tel);
+
+      if (numbers.length > 0) {
+        const listParam = encodeURIComponent(numbers.join(','));
+        const fromParam = encodeURIComponent(member.tel);
+
+        // 🔥 sms: ❌ → tel_sms_send.html ⭕
+        addressHTML = `
+          <a href="tel_sms_send.html?from=${fromParam}&list=${listParam}">
+            ${addressHTML}
+          </a>
+        `;
+      }
+    }
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="no_1">${idx}</td>
+      <td class="name_1"><a href="tel:${member.tel}">${member.name}</a></td>
+      <td class="tel_1"><a href="tel:${member.tel}">${member.tel}</a></td>
+      <td class="address_1">${addressHTML}</td>
+      <td class="remark_1">${member.remark || '&nbsp;'}</td>
+      <td class="sms_1">
+        <a href="sms:${member.tel}">
+          <img class="max-small" src="image/sms-4.png">
+        </a>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+});   // ✅ ★ 이 줄이 없어서 에러 난 겁니다
+
+</script>
+
+</head>
+
+<body>
+  <!-- 초기 로딩 화면 -->
+  <div id="loading-screen">
+    <img src="image/jikji35-1.jpg" alt="직지황악회" />
+  </div>
+
+  <!-- 메인 콘텐츠 -->
+  <div id="main-content">
+    <div class="container">
+      <!-- 헤더 (시계) -->
+      <div class="header">
+        <div id="Clockday">00:00</div>
+        <div id="Clock">00/00/00</div>
+      </div>
+
+      <div class="main-body">
+        <div class="content-wrapper">
+          <div class="wrap2">
+            <!-- 회전 큐브 -->
+            <div class="cube-container">
+              <div class="wrap1">
+                <div class="cube">
+                  <img src="image/email.png" alt="이메일" />
+                  <img src="image/phone.png" alt="폰" />
+                  <img src="image/jikji.png" alt="직지초" />
+                  <img src="image/sms.png" alt="문자" />
+                </div>
+              </div>
+            </div>
+            <!-- 전광판 -->
+            <div class="marquee-container">
+              <div class="marquee">
+                <img src="image/aa.gif" width="25px" height="25px" border="0" alt="image" />
+                <img src="image/dd.gif" width="25px" height="25px" border="0" alt="image" />
+                <span class="custom-span">직지초35회 김천지부 동기연락망</span>
+                <img src="image/dd.gif" width="25px" height="25px" border="0" alt="image" />
+                <img src="image/aa.gif" width="25px" height="25px" border="0" alt="image" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 연락처 테이블 -->
+        <table>
+          <thead>
+            <tr>
+              <th class="no"><span>NO</span></th>
+              <th class="name"><span>이름</span></th>
+              <th class="tel"><span>전화번호</span></th>
+              <th class="address"><span>거주지</span></th>
+              <th class="remark"><span>비고</span></th>
+              <th class="sms"><span>SMS</span></th>
+            </tr>
+          </thead>
+
+          <tbody id="memberTableBody">
+            <!-- Firebase에서 데이터가 동적으로 삽입됩니다 -->
+          </tbody>
+
+          <tfoot>
+            <tr class="tfoot-row">
+              <td colspan="6" class="tfoot-cell">
+
+                <div class="gototop">
+                  <a href="#"><img class="fa" src="image/arrow.png" /></a>
+                </div>
+
+                <div class="foot">
+                  <img src="image/anicircle03_green.gif" />&nbsp;&nbsp;
+                  <span class="jik">
+                    <a href="./book/index.html" target="_blank">
+                      https://jikji35.github.io/terra-1/
+                    </a>
+                  </span>&nbsp;
+                  <img src="image/anicircle03_green.gif" />
+                </div>
+
               </td>
-          </tr>
-          
-          <!-- 기타 Dropdown 메뉴 -->
-          <tr>
-              <td>
-                  <div class="btn-group d-block">
-                    <!-- .btn-custom-width 버튼너비에 사용 -->
-                    <!-- btn-success ~ 녹색계통의 버튼색상 -->
-                      <button type="button" class="btn btn-success dropdown-toggle btn-custom-width" data-bs-toggle="dropdown" aria-expanded="false">
-                          Dropdown
-                      </button>
-                      <!-- dropdown-menu-dark Dropdown버튼을 클릭하면 열리면서 나타나는 배경색 dark바탕색에 흰색계통의 글자 -->
-                      <ul class="dropdown-menu dropdown-menu-dark">
-                          <li><a class="dropdown-item" href="https://drive.google.com/drive/folders/0B7PdKqLOAoVfNE15SjZiSmQyYlk" target="_blank">공유</a></li>
-                          <li><hr class="dropdown-divider"></li>
-                          <li><a class="dropdown-item" href="intro/Forest-2.mp4" target="_blank">Movie</a></li>
-                          <li><hr class="dropdown-divider"></li>
-                          <li><a class="dropdown-item" href="http://naver.me/GrqSOiaT" target="_blank">Music Video</a></li>
-                      </ul>
-                  </div>
-              </td>
-          </tr>
-          
+            </tr>
+          </tfoot>
 
-          <tr>
-          <!--  황악회 입출금내역서 (style.css도 포함)-->
-          <!--  구글스프레드시트에서 drive에 저장된 "gagebu" 파일과 동기화 시켜서 구글시트 파일에서 수정하면 웹페이지에서도 수정된다. 
-            만약에 "gagebu" 파일이 변경된다면 구글 스프레드시트에서 웹게시를 해서 코드번호(주소)를 다시 받아야만 연동시킬수있다.
-            데이타변경시 서버에서 바로 변경되는게 아니라 몇분간 지연될 수도 있다.  -->
-          <!--  js/pass.js 파일과 연동된다. <script src="js/pass.js" defer></script>
-          <script src="js/pass_1.js" defer></script> 상단 <head>안에 스크립트 삽입할것! -->
-              <td>
-                  <a class="btn btn-secondary d-block"
-                    href="#"
-                    onclick="return checkPassword()">
-                    입출금내역서
-                  </a>
+        </table>
+      </div>
+    </div>
+  </div>
 
-              </td>
-          </tr>
-          <tr>
-          <!--  황악회 입출금내역서 (style.css도 포함)-->
-          <!--  구글스프레드시트에서 drive에 저장된 "황악회원 입금현황" 파일과 동기화 시켜서 구글시트 파일에서 수정하면 웹페이지에서도 수정된다. 
-            만약에 "황악회원 입금현황" 파일이 변경된다면 구글 스프레드시트에서 웹게시를 해서 코드번호(주소)를 다시 받아야만 연동시킬수있다.
-            데이타변경시 서버에서 바로 변경되는게 아니라 몇분간 지연될 수도 있다.  -->
-          <!--  js/pass.js 파일과 연동된다. <script src="js/pass.js" defer></script>
-          <script src="js/pass_1.js" defer></script> 상단 <head>안에 스크립트 삽입할것! -->
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const goTop = document.querySelector('.gototop a');
 
-              <td>
-                  <a class="btn btn-secondary d-block"
-                    href="#"
-                    onclick="return checkPassword_2()">
-                    납입금현황
-                  </a>
-                </td>
-          </tr>
-      </tbody>
-  </table>
-</div>
+    if (goTop) {
+      goTop.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        const start = window.scrollY;
+        const duration = 1500; // 1.5초
+        const startTime = performance.now();
+
+        function scrollStep(currentTime) {
+          const elapsed = currentTime - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+
+          // easeOutCubic
+          const ease = 1 - Math.pow(1 - progress, 3);
+
+          window.scrollTo(0, start * (1 - ease));
+
+          if (progress < 1) {
+            requestAnimationFrame(scrollStep);
+          }
+        }
+
+        requestAnimationFrame(scrollStep);
+      });
+    }
+  });
+  </script>
 
 
-						
-  				</div>
-			</div>
-		</nav> 
-
-
-
-        
-
-		<!-- 동영상 만들기  -->
-
-        <div class="hero">
-
-			<div class="heading">
-				<br>
-
-				<!-- 동영상안에 글자넣기/CSS에서  -->
-<!--
-				<h1><span>with CodingWorks</span> HTML+CSS+JS Publishing (J.S.J)</h1> 
-
-			</div>
--->
-
-
-			<!-- 동영상안에 글자넣기/CSS에서  -->
-			<video src="intro/Forest.mp4" autoplay muted loop></video>
-		</div>
-
-        <!-- 부트스트랩 자바스크립트(body 끝단에 삽입하기!) -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
-
-
-				
-				<!-- 카카오톡 오픈채팅방 링크걸기 -->
-
-        <!-- 우측 하단에 카카오톡 이미지 배너 -->
-    <a href="https://open.kakao.com/o/sVTqWDdh" target="_blank">
-    <img src="image/kakaotalk-2.png" alt="카톡채팅" 
-         style="position: fixed; bottom: 70px; right: 20px; width: 30px; height: 30px; z-index: 1000;">
-</a>
-
-
-    </body>
-
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>
-
-
-
-
 
