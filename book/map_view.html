@@ -1,300 +1,316 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
-<meta charset="UTF-8">
-<!-- 모바일 화면 꽉 차게 설정 -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>🚗 찾아오는 길안내입니다.아래의 주소를 클릭하면 해당장소로 안내됩니다.</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>모임 장소 안내</title>
 
-<!-- ✅ 카카오맵 API 키 확인 필수 -->
-<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3409644aa1cb50eb41430562f5df97d2&libraries=services"></script>
+  <link rel="icon" href="/favicon.png?v=2" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
-<style>
-/* CSS 초기화 */
-* { box-sizing: border-box; }
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  font-family: 'Noto Sans KR', sans-serif;
-  overflow: hidden;
-}
+  <!-- ✅ [수정됨] autoload=false 파라미터 추가 -->
+  <script
+    src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3409644aa1cb50eb41430562f5df97d2&libraries=services&autoload=false"></script>
 
-.map-wrapper {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
+  <style>
+    /* 기본 스타일 */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Noto Sans KR', sans-serif;
+      background: #f9f9f9;
+      color: #333;
+    }
 
-#map {
-  width: 100%;
-  height: 100%;
-}
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      position: relative;
+    }
 
-/* 내비게이션 버튼 박스 */
-.navi-buttons {
-  position: absolute;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
-  max-width: 400px;
-  display: none; /* 초기에는 숨김 */
-  gap: 10px;
-  z-index: 9999;
-}
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.4rem;
+      color: #2c3e50;
+    }
 
-/* 공통 버튼 스타일 */
-.btn-navi {
-  flex: 1;
-  padding: 12px; /* 패딩 약간 조절 */
-  border-radius: 12px;
-  text-decoration: none;
-  font-weight: bold;
-  font-size: 16px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  transition: transform 0.2s;
-  
-  /* 🔥 [수정됨] 이미지와 텍스트 가로 정렬 */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px; /* 이미지와 글자 사이 간격 */
-  cursor: pointer;
-}
+    .map-container {
+      width: 100%;
+      height: 350px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      margin-bottom: 20px;
+      background: #eee;
+    }
 
-.btn-navi:active {
-  transform: scale(0.96);
-}
+    .info-box {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      margin-bottom: 150px;
+      /* 버튼 공간 확보 */
+      text-align: center;
+    }
 
-/* 🔥 [추가됨] 버튼 내부 아이콘 이미지 스타일 */
-.btn-icon {
-  width: 24px;  /* 아이콘 크기 */
-  height: 24px;
-  object-fit: contain; /* 비율 유지 */
-  border-radius: 4px; /* 모서리 살짝 둥글게 */
-}
+    .place-name {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #1976d2;
+      margin-bottom: 10px;
+    }
 
-/* 카카오맵 (노랑) */
-.btn-kakao {
-  background-color: #FEE500;
-  color: #3C1E1E;
-  border: 1px solid #eecbf0;
-}
+    .notice-text {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      white-space: pre-line;
+      text-align: left;
+      color: #555;
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+    }
 
-/* TMAP (흰색/검정) */
-.btn-tmap {
-  background-color: #FFFFFF;
-  color: #000000;
-  border: 1px solid #ccc;
-}
+    /* 내비게이션 버튼 레이아웃 (Grid) */
+    .navi-buttons {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 400px;
+      z-index: 9999;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
 
-/* 모달창 스타일 (기존 유지) */
-.modal-overlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 10000;
-  justify-content: center;
-  align-items: center;
-}
-.modal-box {
-  background: white;
-  padding: 25px;
-  border-radius: 15px;
-  width: 85%;
-  max-width: 320px;
-  text-align: center;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-}
-.modal-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #333; }
-.modal-desc { 
-  font-size: 14px; 
-  color: #666; 
-  margin-bottom: 20px; 
-  line-height: 1.5;
-  text-align: left;      /* ✅ 추가 */
-  white-space: pre-line; /* ✅ 줄바꿈 유지 */ 
-}
-.modal-btns { display: flex; gap: 10px; }
-.modal-btn { flex: 1; padding: 10px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
-.btn-cancel { background: #ff4d4d; color: white; }
+    /* 공통 버튼 스타일 */
+    .btn-navi {
+      padding: 14px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 16px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+    }
 
-</style>
+    .btn-navi:active {
+      transform: scale(0.96);
+    }
+
+    .btn-icon {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+      border-radius: 4px;
+    }
+
+    .btn-kakao {
+      background-color: #FEE500;
+      color: #3C1E1E;
+    }
+
+    .btn-tmap {
+      background-color: #004c97;
+      color: #ffffff;
+    }
+
+    .btn-share {
+      background: #34c759;
+      color: white;
+      grid-column: 1 / -1;
+    }
+
+    /* 하단 전체 차지 */
+  </style>
 </head>
 
 <body>
-<div class="map-wrapper">
-  <div id="map"></div>
+  <div class="container">
 
-  <!-- 내비게이션 버튼 -->
-  <div class="navi-buttons" id="naviBox">
-    <!-- ✅ 카카오맵 버튼 (이미지 교체) -->
-    <a href="#" id="kakaoLink" class="btn-navi btn-kakao" target="_blank">
-      <img src="image/kakao_map.png" alt="kakao" class="btn-icon">
-      카카오맵
-    </a>
-    
-    <!-- ✅ TMAP 버튼 (이미지 교체) -->
-    <div id="tmapLink" class="btn-navi btn-tmap" onclick="tryRunTmap()">
-      <img src="image/t_map.jpg" alt="tmap" class="btn-icon">
-      TMAP 실행
+    <h2>📍 모임 장소 안내</h2>
+
+    <!-- 지도 영역 -->
+    <div class="map-container" id="map"></div>
+
+    <!-- 정보 영역 -->
+    <div class="info-box">
+      <div class="place-name" id="placeName">로딩 중...</div>
+      <div class="notice-text" id="noticeText"></div>
+    </div>
+
+    <!-- 버튼 영역 -->
+    <div class="navi-buttons" id="naviBox">
+      <!-- 1행 좌측 -->
+      <a href="#" id="kakaoLink" class="btn-navi btn-kakao" target="_blank">
+        <img src="image/kakao_map.png" alt="kakao" class="btn-icon">
+        카카오맵
+      </a>
+
+      <!-- 1행 우측 -->
+      <div id="tmapLink" class="btn-navi btn-tmap" onclick="tryRunTmap()">
+        <img src="image/t_map.jpg" alt="tmap" class="btn-icon">
+        TMAP 실행
+      </div>
+
+      <!-- 2행 전체 -->
+      <button class="btn-navi btn-share" onclick="shareUrl()">
+        <i class="bi bi-share-fill"></i> 링크 공유하기
+      </button>
     </div>
   </div>
-</div>
 
-<!-- 안내 모달창 -->
-<div id="tmapModal" class="modal-overlay">
-  <div class="modal-box">
-    <div class="modal-title">📢 [안내]</div>
-    <div class="modal-desc">
-      TMAP 앱이 열리지 않으면 설치되어 있지 않습니다.<br>
-      설치 페이지로 이동하시겠습니까?
-    </div>
-    <div class="modal-btns">
-      <button class="modal-btn btn-cancel" onclick="closeModal()">닫기</button>
+  <script type="module">
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+    import { app } from "./js/firebase-config.js";
+    const db = getDatabase(app);
+    const auth = getAuth(app);
 
-    </div>
-  </div>
-</div>
+    // 전역 함수 등록
+    window.tryRunTmap = tryRunTmap;
+    window.shareUrl = shareUrl;
 
-
-<script>
-// ===============================
-// 0. 안내문 불러오기 + 모달 표시
-// ===============================
-const noticeText = localStorage.getItem('modalNoticeText');
-
-window.onload = function () {
-  if (noticeText) {
-    document.querySelector('.modal-desc').innerText = noticeText;
-    showModal();
-  }
-};
-
-// ===============================
-// 1. URL 파라미터 읽기
-// ===============================
-const params = new URLSearchParams(window.location.search);
-const address = params.get('addr');
-const lat = params.get('lat');
-const lng = params.get('lng');
-
-if (!address) {
-  alert('입력된 주소가 없습니다.');
-  throw new Error('address parameter missing');
-}
-
-// ===============================
-// 2. 지도 기본 설정
-// ===============================
-const mapContainer = document.getElementById('map');
-const mapOption = {
-  center: new kakao.maps.LatLng(37.5665, 126.9780),
-  level: 3
-};
-
-const map = new kakao.maps.Map(mapContainer, mapOption);
-const geocoder = new kakao.maps.services.Geocoder();
-const marker = new kakao.maps.Marker({ map });
-
-// 네비게이션 링크용
-let tmapUrlScheme = "";
-
-// ===============================
-// 3. 지도 표시 함수 (공통)
-// ===============================
-function renderMap(lat, lng, address) {
-  const coords = new kakao.maps.LatLng(Number(lat), Number(lng));
-
-  map.setCenter(coords);
-  marker.setPosition(coords);
-
-  new kakao.maps.InfoWindow({
-    content: `<div style="width:150px;text-align:center;padding:6px 0;font-size:14px;">
-                ${address}
-              </div>`
-  }).open(map, marker);
-
-  // 네비 버튼 설정
-  const naviBox = document.getElementById('naviBox');
-  const kakaoBtn = document.getElementById('kakaoLink');
-
-  kakaoBtn.href = `https://map.kakao.com/link/to/${address},${lat},${lng}`;
-  tmapUrlScheme = `tmap://route?goalname=${encodeURIComponent(address)}&goalx=${lng}&goaly=${lat}`;
-
-  naviBox.style.display = 'flex';
-}
-
-// ===============================
-// 4. 좌표 우선 → 없으면 주소 검색
-// ===============================
-if (lat && lng) {
-  // ✅ URL에 좌표가 있는 경우 (공유 링크용, 가장 안정적)
-  renderMap(lat, lng, address);
-
-} else {
-  // ✅ 좌표 없으면 주소 → 좌표 변환
-  geocoder.addressSearch(address, function (result, status) {
-    if (status === kakao.maps.services.Status.OK) {
-      const foundLat = result[0].y;
-      const foundLng = result[0].x;
-
-      renderMap(foundLat, foundLng, address);
-    } else {
-      alert("주소 위치를 찾을 수 없습니다.");
+    // URL 파라미터 가져오기
+    function getQueryParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
     }
-  });
-}
 
-// ===============================
-// 5. TMAP 실행 로직
-// ===============================
-function tryRunTmap() {
-  if (!tmapUrlScheme) return;
+    // 지도 및 데이터 로드 메인 로직
+    async function initMapPage() {
+      let addr = getQueryParam('addr');
+      let lat = parseFloat(getQueryParam('lat'));
+      let lng = parseFloat(getQueryParam('lng'));
+      let notice = "";
 
-  const startTime = Date.now();
-  location.href = tmapUrlScheme;
+      try {
+        // 1. Firebase 익명 로그인 (읽기 권한 확보)
+        await signInAnonymously(auth);
 
-  setTimeout(() => {
-    if (Date.now() - startTime < 2500) {
-      showModal();
+        // 2. Firebase에서 데이터 가져오기 (공통/최신 데이터)
+        const snapshot = await get(ref(db, 'terraone/map_data'));
+        let dbData = null;
+        if (snapshot.exists()) {
+          dbData = snapshot.val();
+        }
+
+        // 3. 데이터 우선순위 결정
+        // (1) URL 파라미터가 있는 경우 (공유 링크) -> URL 데이터 사용
+        if (addr && !isNaN(lat) && !isNaN(lng)) {
+          // 공유 링크에서는 안내문만 DB에서 가져오거나 로컬 사용
+          notice = dbData ? dbData.notice : (localStorage.getItem('modalNoticeText') || "별도 전달사항이 없습니다.");
+        }
+        // (2) URL 파라미터가 없으면 Firebase DB 데이터 사용
+        else if (dbData) {
+          addr = dbData.addr;
+          lat = dbData.lat;
+          lng = dbData.lng;
+          notice = dbData.notice;
+
+          // 로컬 스토리지 동기화 (필요시)
+          localStorage.setItem('savedAddr', addr);
+          localStorage.setItem('savedLat', lat);
+          localStorage.setItem('savedLng', lng);
+          localStorage.setItem('modalNoticeText', notice);
+        }
+      } catch (e) {
+        console.error("❌ Firebase 로드 실패:", e);
+        // 실패 시 로컬 스토리지 최후 수단 사용
+        addr = addr || localStorage.getItem('savedAddr');
+        lat = lat || parseFloat(localStorage.getItem('savedLat'));
+        lng = lng || parseFloat(localStorage.getItem('savedLng'));
+        notice = notice || localStorage.getItem('modalNoticeText') || "별도 전달사항이 없습니다.";
+      }
+
+      // 4. 안내문 표시
+      document.getElementById('noticeText').innerText = notice || "별도 전달사항이 없습니다.";
+
+      // 5. 지도 렌더링
+      if (addr && !isNaN(lat) && !isNaN(lng)) {
+        document.getElementById('placeName').innerText = addr;
+
+        kakao.maps.load(function () {
+          const mapContainer = document.getElementById('map');
+          const mapOption = {
+            center: new kakao.maps.LatLng(lat, lng),
+            level: 3
+          };
+          const map = new kakao.maps.Map(mapContainer, mapOption);
+          const marker = new kakao.maps.Marker({
+            position: new kakao.maps.LatLng(lat, lng),
+            map: map
+          });
+          new kakao.maps.InfoWindow({
+            content: `<div style="padding:5px;text-align:center;width:150px;">${addr}</div>`
+          }).open(map, marker);
+        });
+
+        document.getElementById('kakaoLink').href = `https://map.kakao.com/link/to/${addr},${lat},${lng}`;
+
+        // 전역 변수 업데이트 (Tmap/공유용)
+        window.currentAddr = addr;
+        window.currentLat = lat;
+        window.currentLng = lng;
+
+      } else {
+        alert("저장된 장소 정보가 없습니다.\n먼저 장소를 검색해서 지도를 생성해주세요.");
+        document.getElementById('placeName').innerText = "장소 정보 없음";
+        document.getElementById('naviBox').style.display = 'none';
+      }
     }
-  }, 1500);
-}
 
-// ===============================
-// 6. 모달 제어
-// ===============================
-function showModal() {
-  document.getElementById('tmapModal').style.display = 'flex';
-}
+    // 초기화 실행
+    initMapPage();
 
-function closeModal() {
-  document.getElementById('tmapModal').style.display = 'none';
-}
+    // TMAP 실행 함수
+    function tryRunTmap() {
+      const { currentAddr: addr, currentLat: lat, currentLng: lng } = window;
+      if (!addr || isNaN(lat) || isNaN(lng)) {
+        alert("위치 정보가 없습니다.");
+        return;
+      }
+      location.href = `tmap://route?goalname=${addr}&goalx=${lng}&goaly=${lat}`;
+    }
 
-// ===============================
-// 7. 스토어 이동
-// ===============================
-function goToStore() {
-  const ua = navigator.userAgent.toLowerCase();
+    // (5) 공유하기 함수
+    function shareUrl() {
+      const { currentAddr: addr, currentLat: lat, currentLng: lng } = window;
+      const shareLink = `${window.location.origin}${window.location.pathname}?addr=${encodeURIComponent(addr)}&lat=${lat}&lng=${lng}`;
 
-  if (ua.includes("android")) {
-    location.href = "market://details?id=com.skt.tmap.ku";
-  } else if (ua.includes("iphone") || ua.includes("ipad")) {
-    location.href = "https://apps.apple.com/kr/app/tmap-%EB%8C%80%EC%A4%91%EA%B5%90%ED%86%B5-%EB%8C%80%EB%A6%AC%EC%9A%B4%EC%A0%84/id431589174";
-  } else {
-    alert("모바일 기기에서만 설치가 가능합니다.");
-  }
-
-  closeModal();
-}
-</script>
-
-
+      if (navigator.share) {
+        navigator.share({
+          title: '모임 장소 안내',
+          text: `[모임장소] ${addr}\n아래 링크를 눌러 확인하세요!`,
+          url: shareLink,
+        })
+          .catch((error) => console.log('공유 실패', error));
+      } else {
+        const dummy = document.createElement("textarea");
+        document.body.appendChild(dummy);
+        dummy.value = shareLink;
+        dummy.select();
+        document.execCommand("copy");
+        document.body.removeChild(dummy);
+        alert("URL이 복사되었습니다. 카톡 등에 붙여넣기 하세요!");
+      }
+    }
+  </script>
 </body>
+
 </html>
