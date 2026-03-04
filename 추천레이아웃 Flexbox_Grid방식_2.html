@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>세련된 반응형 레이아웃 샘플</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* 전체 레이아웃: Flexbox 사용 (body) */
+        body {
+            margin: 0;
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f9f9fa;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* 컨테이너: Grid 사용 */
+        .container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            grid-template-rows: 80px 1fr auto;
+            grid-template-areas:
+                "header header"
+                "sidebar main"
+                "footer footer";
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+            flex: 1; /* 남은 공간 채우기 */
+        }
+
+        /* 헤더 */
+        header {
+            grid-area: header;
+            background-color: #fff;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2185d0;
+            /* Semantic UI Blue */
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 상단 메뉴 */
+        nav .top-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        nav .top-menu li a {
+            display: block;
+            padding: 0.7rem 1.2rem;
+            text-decoration: none;
+            color: #555;
+            border-radius: 25px;
+            transition: background-color 0.3s, color 0.3s;
+            font-weight: 500;
+        }
+
+        nav .top-menu li a:hover {
+            background-color: #e0e1e2;
+            color: #222;
+        }
+
+        nav .top-menu li a.active,
+        nav .top-menu li a.active:hover {
+            background-color: #2185d0;
+            color: white;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 사이드바 */
+        aside {
+            grid-area: sidebar;
+            background-color: #fff;
+            border-right: 1px solid #ddd;
+            padding: 2rem;
+        }
+
+        aside h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #666;
+        }
+
+        aside ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        aside ul li a {
+            display: block;
+            padding: 0.7rem 0;
+            text-decoration: none;
+            color: #555;
+            border-bottom: 1px solid #eee;
+            transition: color 0.3s;
+        }
+
+        aside ul li a:hover {
+            color: #2185d0;
+            /* Semantic UI Blue */
+        }
+
+        /* 메인 콘텐츠 */
+        main {
+            grid-area: main;
+            padding: 2rem;
+            background-color: #fff;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.03);
+        }
+
+        main h2 {
+            font-size: 2rem;
+            color: #2185d0;
+            /* Semantic UI Blue */
+            margin-bottom: 1rem;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        main p {
+            line-height: 1.7;
+            color: #666;
+        }
+
+        /* 푸터 */
+        footer {
+            grid-area: footer;
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        /* 햄버거 버튼 스타일 */
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #555;
+            transition: color 0.3s;
+        }
+
+        .hamburger:hover {
+            color: #2185d0;
+            /* Semantic UI Blue */
+        }
+
+        /* 모바일 뷰 스타일 */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto 1fr auto;
+                grid-template-areas:
+                    "header"
+                    "menu"
+                    "main"
+                    "footer";
+            }
+
+            aside {
+                display: none !important; /* 사이드바 숨김 */
+            }
+
+            header {
+                padding: 1rem;
+            }
+
+            nav .top-menu {
+                display: none;
+            }
+
+            /* 햄버거 버튼 표시 */
+            .hamburger {
+                display: block;
+            }
+
+            /* 모바일 메뉴 */
+            nav.mobile-menu {
+                grid-area: menu;
+                background-color: #fff;
+                padding: 1rem;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+
+            nav.mobile-menu ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            nav.mobile-menu li a {
+                display: block;
+                padding: 0.7rem 1rem;
+                text-decoration: none;
+                color: #555;
+                border-bottom: 1px solid #eee;
+                transition: background-color 0.3s;
+            }
+
+            nav.mobile-menu li a:hover {
+                background-color: #e0e1e2;
+                color: #222;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="ui container" id="app">
+
+        <header>
+            <div class="logo">테라원</div>
+            <nav>
+                <ul class="top-menu">
+                    <li><a href="#" :class="{active: currentContent === 'home'}"
+                            @click.prevent="showContent('home')">홈</a></li>
+                    <li><a href="#" :class="{active: currentContent === 'about'}"
+                            @click.prevent="showContent('about')">회사소개</a></li>
+                    <li><a href="#" :class="{active: currentContent === 'services'}"
+                            @click.prevent="showContent('services')">서비스</a></li>
+                    <li><a href="#" :class="{active: currentContent === 'contact'}"
+                            @click.prevent="showContent('contact')">연락처</a></li>
+                </ul>
+            </nav>
+            <!-- 햄버거 버튼 -->
+            <a href="#" class="hamburger" @click.prevent="toggleMenu">
+                <i class="sidebar icon"></i>
+            </a>
+        </header>
+
+        <!-- 모바일 메뉴 -->
+        <nav class="mobile-menu" v-if="showMobileMenu">
+            <ul>
+                <li><a href="#" @click.prevent="showContent('home'); toggleMenu()">홈</a></li>
+                <li><a href="#" @click.prevent="showContent('about'); toggleMenu()">회사소개</a></li>
+                <li><a href="#" @click.prevent="showContent('services'); toggleMenu()">서비스</a></li>
+                <li><a href="#" @click.prevent="showContent('contact'); toggleMenu()">연락처</a></li>
+            </ul>
+        </nav>
+
+        <aside>
+            <h3>사이드바 메뉴</h3>
+            <ul>
+                <li><a href="#" @click.prevent="showContent('products')">제품</a></li>
+                <li><a href="#" @click.prevent="showContent('pricing')">가격</a></li>
+                <li><a href="#" @click.prevent="showContent('faq')">FAQ</a></li>
+            </ul>
+        </aside>
+
+        <main>
+            <h2 class="ui header" v-if="currentContent === 'home'">홈</h2>
+            <h2 class="ui header" v-if="currentContent === 'about'">회사소개</h2>
+            <h2 class="ui header" v-if="currentContent === 'services'">서비스</h2>
+            <h2 class="ui header" v-if="currentContent === 'contact'">연락처</h2>
+            <h2 class="ui header" v-if="currentContent === 'products'">제품</h2>
+            <h2 class="ui header" v-if="currentContent === 'pricing'">가격</h2>
+            <h2 class="ui header" v-if="currentContent === 'faq'">FAQ</h2>
+            <p>컨텐츠 영역</p>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 테라원.</p>
+        </footer>
+
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+        const { createApp } = Vue
+
+        createApp({
+            data() {
+                return {
+                    currentContent: 'home',
+                    showMobileMenu: false
+                }
+            },
+            methods: {
+                showContent(content) {
+                    this.currentContent = content
+                },
+                toggleMenu() {
+                    this.showMobileMenu = !this.showMobileMenu
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+
+</html>
